@@ -86,7 +86,7 @@ $ terraform apply
 ...  
 Terraform will perform the following actions:  
 
-  # aws_key_pair.web_admin will be created  
+  //aws_key_pair.web_admin will be created  
   + resource "aws_key_pair" "web_admin" {  
       + fingerprint = (known after apply)  
       + id          = (known after apply)  
@@ -168,3 +168,105 @@ $ terraform console
 > aws_db_instance.web_db.endpoint  
 
 ![image](https://user-images.githubusercontent.com/74689088/144785708-01766ffa-5e87-4908-b036-54f5ffb54a03.png)  
+
+프로비저닝된 인프라스트럭쳐 일괄 종료  
+mv web_infra.tf /tmp/  
+
+admin@192 web_infra % terraform plan
+aws_key_pair.web_admin: Refreshing state... [id=web_admin]
+aws_security_group.ssh: Refreshing state... [id=sg-04e3de0e0596bca77]
+aws_db_instance.web_db: Refreshing state... [id=terraform-20211206030208071100000001]
+aws_instance.web: Refreshing state... [id=i-0d75d3077d64d203a]
+
+Note: Objects have changed outside of Terraform
+
+Terraform detected the following changes made outside of Terraform since the last "terraform apply":
+
+  # aws_db_instance.web_db has been changed
+  ~ resource "aws_db_instance" "web_db" {
+      + enabled_cloudwatch_logs_exports       = []
+        id                                    = "terraform-20211206030208071100000001"
+      + security_group_names                  = []
+      + tags                                  = {}
+        # (44 unchanged attributes hidden)
+    }
+
+Unless you have made equivalent changes to your configuration, or ignored the relevant attributes using ignore_changes, the following plan may include actions
+to undo or respond to these changes.
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_db_instance.web_db will be destroyed
+  - resource "aws_db_instance" "web_db" {
+      - address                               = "terraform-20211206030208071100000001.cp6dqd3cronu.ap-northeast-2.rds.amazonaws.com" -> null
+      - allocated_storage                     = 8 -> null
+      - arn                                   = "arn:aws:rds:ap-northeast-2:470919348757:db:terraform-20211206030208071100000001" -> null
+      - auto_minor_version_upgrade            = true -> null
+      - availability_zone                     = "ap-northeast-2c" -> null
+      - backup_retention_period               = 0 -> null
+      - backup_window                         = "14:23-14:53" -> null
+      - ca_cert_identifier                    = "rds-ca-2019" -> null
+      - copy_tags_to_snapshot                 = false -> null
+      - customer_owned_ip_enabled             = false -> null
+      - db_subnet_group_name                  = "default" -> null
+      - delete_automated_backups              = true -> null
+      - deletion_protection                   = false -> null
+      - enabled_cloudwatch_logs_exports       = [] -> null
+      - endpoint                              = "terraform-20211206030208071100000001.cp6dqd3cronu.ap-northeast-2.rds.amazonaws.com:3306" -> null
+      - engine                                = "mysql" -> null
+      - engine_version                        = "5.6.35" -> null
+      - engine_version_actual                 = "5.6.35" -> null
+      - hosted_zone_id                        = "ZLA2NUCOLGUUR" -> null
+      - iam_database_authentication_enabled   = false -> null
+      - id                                    = "terraform-20211206030208071100000001" -> null
+      - identifier                            = "terraform-20211206030208071100000001" -> null
+      - instance_class                        = "db.t2.micro" -> null
+      - iops                                  = 0 -> null
+      - latest_restorable_time                = "0001-01-01T00:00:00Z" -> null
+      - license_model                         = "general-public-license" -> null
+      - maintenance_window                    = "thu:13:28-thu:13:58" -> null
+      - max_allocated_storage                 = 0 -> null
+      - monitoring_interval                   = 0 -> null
+      - multi_az                              = false -> null
+      - option_group_name                     = "default:mysql-5-6" -> null
+      - parameter_group_name                  = "default.mysql5.6" -> null
+      - password                              = (sensitive value)
+      - performance_insights_enabled          = false -> null
+      - performance_insights_retention_period = 0 -> null
+      - port                                  = 3306 -> null
+      - publicly_accessible                   = false -> null
+      - replicas                              = [] -> null
+      - resource_id                           = "db-FXKODWFUWB6KZPBW4X32VJJBLA" -> null
+      - security_group_names                  = [] -> null
+      - skip_final_snapshot                   = true -> null
+      - status                                = "available" -> null
+      - storage_encrypted                     = false -> null
+      - storage_type                          = "gp2" -> null
+      - tags                                  = {} -> null
+      - tags_all                              = {} -> null
+      - username                              = "admin" -> null
+      - vpc_security_group_ids                = [
+          - "sg-057a61844e8e90a8e",
+        ] -> null
+    }
+
+  # aws_instance.web will be destroyed
+
+    }
+
+  # aws_key_pair.web_admin will be destroyed
+  - resource "aws_key_pair" "web_admin" {
+
+    }
+
+  # aws_security_group.ssh will be destroyed
+  - resource "aws_security_group" "ssh" {
+
+    }
+
+Plan: 0 to add, 0 to change, 4 to destroy.
