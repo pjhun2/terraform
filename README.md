@@ -124,3 +124,47 @@ resource "aws_security_group" "ssh" {
 적용 시 화면  
 ![image](https://user-images.githubusercontent.com/74689088/144784510-092793d1-2a98-4561-860f-6d2272146692.png)  
 
+인스턴스 생성  
+resource "aws_instance" "web" {  
+  ami = "ami-0a93a08544874b3b7" # amzn2-ami-hvm-2.0.20200207.1-x86_64-gp2  
+  instance_type = "t2.micro"  
+  key_name = aws_key_pair.web_admin.key_name  
+  vpc_security_group_ids = [  
+    aws_security_group.ssh.id,  
+    data.aws_security_group.default.id  
+  ]  
+}  
+
+![image](https://user-images.githubusercontent.com/74689088/144784861-3797d1bb-0c6f-410a-92b3-690abc1f31f5.png)  
+
+콘솔에서 IP 조회  
+$ terraform console  
+> aws_instance.web.public_ip  
+
+SSH 연결  
+ssh -i ~/.ssh/web_admin ec2-user@{Server_IP}  
+
+       __|  __|_  )  
+       _|  (     /   Amazon Linux 2 AMI  
+      ___|\___|___|  
+
+https://aws.amazon.com/amazon-linux-2/  
+
+RDS 생성  
+resource "aws_db_instance" "web_db" {  
+  allocated_storage = 8  
+  engine = "mysql"  
+  engine_version = "5.6.35"  
+  instance_class = "db.t2.micro"  
+  username = "admin"  
+  password = "<DB_PASSWORD>"  
+  skip_final_snapshot = true  
+}  
+
+![image](https://user-images.githubusercontent.com/74689088/144785510-83a8ef3c-c083-4daa-b701-3a823f8d0279.png)  
+
+Database EndPoint 확인  
+$ terraform console  
+> aws_db_instance.web_db.endpoint  
+
+![image](https://user-images.githubusercontent.com/74689088/144785708-01766ffa-5e87-4908-b036-54f5ffb54a03.png)  
