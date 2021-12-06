@@ -172,101 +172,87 @@ $ terraform console
 프로비저닝된 인프라스트럭쳐 일괄 종료  
 mv web_infra.tf /tmp/  
 
+--------------------------------------------
 admin@192 web_infra % terraform plan
 aws_key_pair.web_admin: Refreshing state... [id=web_admin]
 aws_security_group.ssh: Refreshing state... [id=sg-04e3de0e0596bca77]
 aws_db_instance.web_db: Refreshing state... [id=terraform-20211206030208071100000001]
 aws_instance.web: Refreshing state... [id=i-0d75d3077d64d203a]
 
-Note: Objects have changed outside of Terraform
-
-Terraform detected the following changes made outside of Terraform since the last "terraform apply":
-
-  # aws_db_instance.web_db has been changed
-  ~ resource "aws_db_instance" "web_db" {
-      + enabled_cloudwatch_logs_exports       = []
-        id                                    = "terraform-20211206030208071100000001"
-      + security_group_names                  = []
-      + tags                                  = {}
-        # (44 unchanged attributes hidden)
-    }
-
-Unless you have made equivalent changes to your configuration, or ignored the relevant attributes using ignore_changes, the following plan may include actions
-to undo or respond to these changes.
-
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
-  - destroy
-
-Terraform will perform the following actions:
-
-  # aws_db_instance.web_db will be destroyed
+  aws_db_instance.web_db will be destroyed
   - resource "aws_db_instance" "web_db" {
-      - address                               = "terraform-20211206030208071100000001.cp6dqd3cronu.ap-northeast-2.rds.amazonaws.com" -> null
-      - allocated_storage                     = 8 -> null
-      - arn                                   = "arn:aws:rds:ap-northeast-2:470919348757:db:terraform-20211206030208071100000001" -> null
-      - auto_minor_version_upgrade            = true -> null
-      - availability_zone                     = "ap-northeast-2c" -> null
-      - backup_retention_period               = 0 -> null
-      - backup_window                         = "14:23-14:53" -> null
-      - ca_cert_identifier                    = "rds-ca-2019" -> null
-      - copy_tags_to_snapshot                 = false -> null
-      - customer_owned_ip_enabled             = false -> null
-      - db_subnet_group_name                  = "default" -> null
-      - delete_automated_backups              = true -> null
-      - deletion_protection                   = false -> null
-      - enabled_cloudwatch_logs_exports       = [] -> null
-      - endpoint                              = "terraform-20211206030208071100000001.cp6dqd3cronu.ap-northeast-2.rds.amazonaws.com:3306" -> null
-      - engine                                = "mysql" -> null
-      - engine_version                        = "5.6.35" -> null
-      - engine_version_actual                 = "5.6.35" -> null
-      - hosted_zone_id                        = "ZLA2NUCOLGUUR" -> null
-      - iam_database_authentication_enabled   = false -> null
-      - id                                    = "terraform-20211206030208071100000001" -> null
-      - identifier                            = "terraform-20211206030208071100000001" -> null
-      - instance_class                        = "db.t2.micro" -> null
-      - iops                                  = 0 -> null
-      - latest_restorable_time                = "0001-01-01T00:00:00Z" -> null
-      - license_model                         = "general-public-license" -> null
-      - maintenance_window                    = "thu:13:28-thu:13:58" -> null
-      - max_allocated_storage                 = 0 -> null
-      - monitoring_interval                   = 0 -> null
-      - multi_az                              = false -> null
-      - option_group_name                     = "default:mysql-5-6" -> null
-      - parameter_group_name                  = "default.mysql5.6" -> null
-      - password                              = (sensitive value)
-      - performance_insights_enabled          = false -> null
-      - performance_insights_retention_period = 0 -> null
-      - port                                  = 3306 -> null
-      - publicly_accessible                   = false -> null
-      - replicas                              = [] -> null
-      - resource_id                           = "db-FXKODWFUWB6KZPBW4X32VJJBLA" -> null
-      - security_group_names                  = [] -> null
-      - skip_final_snapshot                   = true -> null
-      - status                                = "available" -> null
-      - storage_encrypted                     = false -> null
-      - storage_type                          = "gp2" -> null
-      - tags                                  = {} -> null
-      - tags_all                              = {} -> null
-      - username                              = "admin" -> null
-      - vpc_security_group_ids                = [
-          - "sg-057a61844e8e90a8e",
-        ] -> null
-    }
 
-  # aws_instance.web will be destroyed
+
+  aws_instance.web will be destroyed
 
     }
 
-  # aws_key_pair.web_admin will be destroyed
+  aws_key_pair.web_admin will be destroyed
   - resource "aws_key_pair" "web_admin" {
 
     }
 
-  # aws_security_group.ssh will be destroyed
+  aws_security_group.ssh will be destroyed
   - resource "aws_security_group" "ssh" {
 
     }
+Plan: 0 to add, 0 to change, 4 to destroy.
+-----------------------------------------------
+
+현재 상태  
+![image](https://user-images.githubusercontent.com/74689088/144787780-86e0a752-dcd5-4f17-af91-3efd4f2221e1.png)  
+
+복원  
+mv /tmp/web_infra.tf .  
+plan시 no changes 상태  
+
+
+파일을 옮기지 않고 현재까지 생성한 인스턴스 및 기타 삭제  
+
+----------------------------------------  
+$ terraform plan -destroy  
+...  
+  - resource "aws_db_instance" "web_db" {  
+...  
+  - resource "aws_instance" "web" {  
+...  
+  - resource "aws_key_pair" "web_admin" {  
+...  
+  - resource "aws_security_group" "ssh" {  
+
+Plan: 0 to add, 0 to change, 4 to destroy.  
+
+----------------------------------------  
+$ terraform destroy
+...
+  - resource "aws_db_instance" "web_db" {
+...
+  - resource "aws_instance" "web" {
+...
+  - resource "aws_key_pair" "web_admin" {
+...
+  - resource "aws_security_group" "ssh" {
 
 Plan: 0 to add, 0 to change, 4 to destroy.
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+  
+  --------------------------------------  
+  
+  인스턴스 및 기타 그룹 삭제  
+  ![image](https://user-images.githubusercontent.com/74689088/144788504-38a1330b-441d-4985-8357-efc221bcc793.png)  
+  
+  ![image](https://user-images.githubusercontent.com/74689088/144788694-2c45319f-5ece-4029-ae69-1ebf08813fd6.png) 
+  
+  ![image](https://user-images.githubusercontent.com/74689088/144788907-660ed66c-ce87-4f8e-8de5-d673a698fbdc.png)  
+  
+  ![image](https://user-images.githubusercontent.com/74689088/144788939-f1b4e2c6-4b0b-45d2-9450-111d0363dbcf.png)  
+  
+  모든 리소스 다시 프로비저닝 하기  
+  terraform plan  
+  terraform apply  
+
