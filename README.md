@@ -41,5 +41,86 @@ HCL은 테라폼에서 사용하는 설정 언어입니다. 테라폼에서 모�
 계정 생성  
 IAM 계정 생성  
 access_key와 secret_key를 갖도록 생성  
-![image](https://user-images.githubusercontent.com/74689088/144781389-372fdb88-636d-4297-b3d8-e53ba8da9178.png)
+![image](https://user-images.githubusercontent.com/74689088/144781389-372fdb88-636d-4297-b3d8-e53ba8da9178.png)  
+
+
+provider 정의  
+provider "aws" {  
+  access_key = "<AWS_ACCESS_KEY>"  
+  secret_key = "<AWS_SECRET_KEY>"  
+  region = "ap-northeast-2"  
+}  
+
+이 때 <AWS_ACCESS_KEY>와 <AWS_SECRET_KEY>는 앞서 생성한 terraform 사용자의 인증 정보로 대체해줍니다. 
+region은 리소스를 정의할 AWS 리전을 설정합니다.   
+여기서 사용한 ap-northeast-2는 AWS의 서울 리전을 의미합니다.  
+
+프로젝트 초기화  
+$ terraform init  
+
+리소스 정의
+resource "aws_key_pair" "web_admin" {  
+  key_name = "web_admin"  
+  public_key = file("~/.ssh/web_admin.pub")  
+}  
+
+적용 확인  
+terraform plan    
+...  
+Terraform will perform the following actions:  
+
+  # aws_key_pair.web_admin will be created  
+  + resource "aws_key_pair" "web_admin" {  
+      + fingerprint = (known after apply)  
+      + id          = (known after apply)  
+      + key_name    = "web_admin"  
+      + key_pair_id = (known after apply)  
+      + public_key  = "ssh-rsa ...."  
+
+Plan: 1 to add, 0 to change, 0 to destroy.  
+
+plan 시 상태  
+![image](https://user-images.githubusercontent.com/74689088/144783228-3cfe7207-e9ee-416f-aef3-19518ed9f8de.png)  
+
+$ terraform apply  
+...  
+Terraform will perform the following actions:  
+
+  # aws_key_pair.web_admin will be created  
+  + resource "aws_key_pair" "web_admin" {  
+      + fingerprint = (known after apply)  
+      + id          = (known after apply)  
+      + key_name    = "web_admin"  
+      + key_pair_id = (known after apply)  
+      + public_key  = "ssh-rsa ..."  
+    }  
+
+Plan: 1 to add, 0 to change, 0 to destroy.  
+
+Do you want to perform these actions?  
+  Terraform will perform the actions described above.  
+  Only 'yes' will be accepted to approve.  
+
+  Enter a value:  
+
+apply 시 상태  
+![image](https://user-images.githubusercontent.com/74689088/144783273-62b8a7f5-e419-464b-9460-145cace41d51.png)  
+
+생성된 키 페어  
+![image](https://user-images.githubusercontent.com/74689088/144783818-d507632a-00ad-40ae-b57c-0367b2f879ca.png)  
+
+SSH 허용을 위한 보안그룹  
+resource "aws_security_group" "ssh" {  
+  name = "allow_ssh_from_all"  
+  description = "Allow SSH port from all"  
+  ingress {  
+    from_port = 22  
+    to_port = 22  
+    protocol = "tcp"  
+    cidr_blocks = ["0.0.0.0/0"]  
+  }  
+}  
+
+적용 시 화면  
+![image](https://user-images.githubusercontent.com/74689088/144784510-092793d1-2a98-4561-860f-6d2272146692.png)  
 
